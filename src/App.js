@@ -118,7 +118,6 @@ export default function App() {
   const [pinError, setPinError]     = useState(false);
   const [isParent, setIsParent]     = useState(false);
   const [parentPass, setParentPass] = useState("");
-  const [parentMode, setParentMode] = useState(false);
   const [tab, setTab]               = useState("home");
   const [parentTab, setParentTab]   = useState("perfil");
   const [activeBucket, setActiveBucket] = useState(null);
