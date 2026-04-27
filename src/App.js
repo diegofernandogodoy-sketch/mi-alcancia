@@ -181,7 +181,7 @@ export default function App() {
   }
 
   function handleParentLogin() {
-    if (parentPass === "papa1234") { setParentMode(true); setScreen("parent"); setParentPass(""); setIsParent(false); }
+    if (parentPass === "papa1234") { setScreen("parent"); setParentPass(""); setIsParent(false); }
     else alert("Contraseña incorrecta");
   }
 
@@ -275,7 +275,7 @@ export default function App() {
           <p style={{ margin:0, fontSize:12, opacity:0.8 }}>Panel del adulto {saving?"· 💾":""}</p>
           <h2 style={{ margin:"2px 0 0", fontSize:20, fontWeight:700 }}>Configuración</h2>
         </div>
-        <button onClick={() => { setScreen("login"); setParentMode(false); }}
+        <button onClick={() => { setScreen("login"); }}
           style={{ background:"rgba(255,255,255,0.2)", border:"none", borderRadius:10,
                    padding:"8px 12px", color:"white", cursor:"pointer", fontSize:14 }}>
           Cerrar sesión
