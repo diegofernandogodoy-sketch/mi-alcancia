@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-const SUPABASE_URL = "const SUPABASE_URL = "https://gbdeulaydljzbzfbxlfs.supabase.co";
+const SUPABASE_URL = "https://gbdeulaydljzbzfbxlfs.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdiZGV1bGF5ZGxqemJ6ZmJ4bGZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMzg0NTQsImV4cCI6MjA5MjgxNDQ1NH0.boj_PW7t2lvp61qdxy1u_sUGIJvBu9khzqkac-w5lWk";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const APP_ID = "mi-alcancia-default";
