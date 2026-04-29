@@ -469,7 +469,35 @@ function ParentPanel({ open, onClose, state, setState, profiles, activeId, onSel
                       <span style={{ fontSize:13, color:b.color, fontWeight:600 }}>%</span>
                     </div>
                   </div>
-                  {key==="meta" && <input value={b.goalName} onChange={e=>updBucket("meta",{goalName:e.target.value})} placeholder="Nombre de la meta" style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:"1.5px solid #eee", fontSize:12, fontFamily:"inherit", boxSizing:"border-box", marginTop:2 }}/>}
+                  {key==="meta" && (
+                    <div style={{ marginTop:4, display:"flex", flexDirection:"column", gap:4 }}>
+                      <input value={b.goalName} onChange={e=>updBucket("meta",{goalName:e.target.value})} placeholder="Nombre de la meta" style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:"1.5px solid #eee", fontSize:12, fontFamily:"inherit", boxSizing:"border-box" }}/>
+                      <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                        <span style={{ fontSize:11, color:"#888", whiteSpace:"nowrap" }}>Objetivo $</span>
+                        <input type="number" value={b.goalAmount} onChange={e=>updBucket("meta",{goalAmount:parseFloat(e.target.value)||0})} placeholder="5000" style={{ flex:1, padding:"8px 10px", borderRadius:8, border:"1.5px solid #eee", fontSize:12, fontFamily:"inherit", boxSizing:"border-box" }}/>
+                      </div>
+                      <div style={{ background:"#f0f0f0", borderRadius:999, height:6, overflow:"hidden" }}>
+                        <div style={{ width:`${Math.min(100,Math.round((b.balance/(b.goalAmount||1))*100))}%`, height:"100%", background:"#a78bfa", borderRadius:999 }}/>
+                      </div>
+                      <p style={{ margin:0, fontSize:10, color:"#aaa" }}>{Math.min(100,Math.round((b.balance/(b.goalAmount||1))*100))}% — {fmtARS(b.balance)} de {fmtARS(b.goalAmount||0)}</p>
+                    </div>
+                  )}
+                  {key==="sueno" && (
+                    <div style={{ marginTop:4, display:"flex", flexDirection:"column", gap:4 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                        <span style={{ fontSize:11, color:"#888", whiteSpace:"nowrap" }}>Objetivo $</span>
+                        <input type="number" value={b.goalAmount||0} onChange={e=>updBucket("sueno",{goalAmount:parseFloat(e.target.value)||0})} placeholder="50000" style={{ flex:1, padding:"8px 10px", borderRadius:8, border:"1.5px solid #eee", fontSize:12, fontFamily:"inherit", boxSizing:"border-box" }}/>
+                      </div>
+                      {(b.goalAmount||0)>0 && (
+                        <>
+                          <div style={{ background:"#f0f0f0", borderRadius:999, height:6, overflow:"hidden" }}>
+                            <div style={{ width:`${Math.min(100,Math.round((b.balance/(b.goalAmount||1))*100))}%`, height:"100%", background:"#34d399", borderRadius:999 }}/>
+                          </div>
+                          <p style={{ margin:0, fontSize:10, color:"#aaa" }}>{Math.min(100,Math.round((b.balance/(b.goalAmount||1))*100))}% — {fmtARS(b.balance)} de {fmtARS(b.goalAmount||0)}</p>
+                        </>
+                      )}
+                    </div>
+                  )}
                   {key==="dar" && <input value={b.cause} onChange={e=>updBucket("dar",{cause:e.target.value})} placeholder="Causa" style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:"1.5px solid #eee", fontSize:12, fontFamily:"inherit", boxSizing:"border-box", marginTop:2 }}/>}
                 </div>
               ))}
@@ -581,7 +609,7 @@ function KidHome({ profile, mode, setMode, rate, dolarType, allProfiles, switchP
       <div style={{ background:`linear-gradient(155deg, ${theme.primary} 0%, ${theme.accent} 120%)`, padding:"14px 18px 22px", color:"white" }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
           <ProfileSelector profiles={allProfiles} activeId={profile.id} onSelect={switchProfile} onAddNew={()=>openModal("addKid")} accent={theme.accent}/>
-          <button onClick={openParent} style={{ width:34, height:34, borderRadius:"50%", border:"none", background:"rgba(255,255,255,0.22)", backdropFilter:"blur(10px)", color:"white", cursor:"pointer", fontSize:14 }}>👤</button>
+          <button onClick={()=>{ setIsParent(true); setScreen("login"); }} style={{ width:34, height:34, borderRadius:"50%", border:"none", background:"rgba(255,255,255,0.22)", backdropFilter:"blur(10px)", color:"white", cursor:"pointer", fontSize:14 }}>👤</button>
         </div>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", gap:10 }}>
           <div>
@@ -723,8 +751,21 @@ function LoginScreen({ theme, displayName, onPin, pinInput, pinError, onParent, 
     <div style={{ minHeight:"100vh", background:theme.bg, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"2rem", fontFamily:"system-ui, sans-serif" }}>
       <div style={{ fontSize:52, marginBottom:6 }}>{theme.emoji}</div>
       <h1 style={{ fontSize:26, fontWeight:800, color:theme.accent, margin:"0 0 2px" }}>Mi Alcancía</h1>
-      <p style={{ color:"#999", fontSize:13, margin:"0 0 28px" }}>{displayName?`Hola ${displayName}!`:"Tu app de finanzas"} — Ingresá tu PIN</p>
+      <p style={{ color:"#999", fontSize:13, margin:"0 0 28px" }}>{displayName?`Hola ${displayName}!`:"Tu app de finanzas"}</p>
       {saving && <p style={{ fontSize:11, color:"#bbb", marginBottom:8 }}>💾 Guardando...</p>}
+
+      {/* Tabs niño / adulto */}
+      <div style={{ display:"flex", gap:3, marginBottom:24, background:"rgba(0,0,0,0.06)", borderRadius:12, padding:3 }}>
+        {[["kid","👧 Niño/a"],["adult","👤 Adulto"]].map(([v,l])=>(
+          <button key={v} onClick={()=>v==="adult"?onParent(false):onParent(true)} style={{
+            padding:"8px 20px", borderRadius:9, border:"none",
+            background: (!isParent&&v==="kid")||(isParent&&v==="adult") ? "white" : "transparent",
+            color: (!isParent&&v==="kid")||(isParent&&v==="adult") ? theme.accent : "#888",
+            fontWeight:600, cursor:"pointer", fontSize:13, fontFamily:"inherit",
+          }}>{l}</button>
+        ))}
+      </div>
+
       {!isParent ? (
         <>
           <div style={{ display:"flex", gap:10, marginBottom:20 }}>
@@ -739,15 +780,16 @@ function LoginScreen({ theme, displayName, onPin, pinInput, pinError, onParent, 
               </button>
             ))}
           </div>
-          <button onClick={onParent} style={{ background:"none", border:"none", color:"#bbb", fontSize:12, cursor:"pointer", textDecoration:"underline" }}>Acceso adulto</button>
         </>
       ) : (
-        <div style={{ display:"flex", flexDirection:"column", gap:10, width:230, alignItems:"center" }}>
-          <p style={{ color:"#666", fontSize:14, margin:0 }}>Contraseña del adulto</p>
+        <div style={{ display:"flex", flexDirection:"column", gap:10, width:240, alignItems:"center" }}>
+          <p style={{ color:"#666", fontSize:14, margin:0, alignSelf:"flex-start" }}>Contraseña del adulto</p>
           <input type="password" value={parentPass} onChange={e=>setParentPass(e.target.value)} placeholder="papa1234"
-            style={{ padding:"10px 14px", borderRadius:10, border:"1.5px solid #ddd", fontSize:15, width:"100%", boxSizing:"border-box" }}/>
-          <button onClick={onParentLogin} style={{ background:theme.accent, color:"white", border:"none", borderRadius:10, padding:10, fontSize:14, fontWeight:700, cursor:"pointer", width:"100%" }}>Entrar</button>
-          <button onClick={()=>onParent(true)} style={{ background:"none", border:"none", color:"#bbb", fontSize:12, cursor:"pointer" }}>Volver</button>
+            onKeyDown={e=>e.key==="Enter"&&onParentLogin()}
+            style={{ padding:"12px 14px", borderRadius:12, border:"1.5px solid #ddd", fontSize:15, width:"100%", boxSizing:"border-box", fontFamily:"inherit" }}/>
+          <button onClick={onParentLogin} style={{ background:theme.accent, color:"white", border:"none", borderRadius:12, padding:"12px", fontSize:14, fontWeight:700, cursor:"pointer", width:"100%", fontFamily:"inherit" }}>
+            Entrar al panel adulto
+          </button>
         </div>
       )}
     </div>
